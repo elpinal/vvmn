@@ -56,6 +56,7 @@ func runInstall(args []string) int {
 	if _, err := os.Stat(srcDir); err != nil {
 		if err := os.MkdirAll(srcDir, 0777); err != nil {
 			fmt.Fprintln(os.Stderr, err)
+			return 1
 		}
 	}
 	cmd = exec.Command("tar", "xf", "-")
