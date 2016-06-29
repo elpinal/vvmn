@@ -7,8 +7,11 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"strings"
 	"text/template"
+
+	"github.com/mitchellh/go-homedir"
 )
 
 // A Command is an implementation of a vvmn command
@@ -55,6 +58,9 @@ var commands = []*Command{
 	cmdUninstall,
 }
 
+var RepoURL = "git://github.com/vim/vim.git"
+var VvmnDir string
+
 func main() {
 
 	flag.Usage = usage
@@ -69,6 +75,20 @@ func main() {
 	if args[0] == "help" {
 		help(args[1:])
 		return
+	}
+
+	home, err := homedir.Dir()
+	VvmnDir = path.Join(home, ".vvmn")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+
+	if _, err := os.Stat(VvmnDir); err != nil {
+		if err := os.MkdirAll(VvmnDir, 0777); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
 	}
 
 	for _, cmd := range commands {
