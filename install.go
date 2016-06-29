@@ -39,9 +39,15 @@ func runInstall(args []string) int {
 		}
 	}
 
+	cmd := exec.Command("git", "fetch", "--tags")
+	cmd.Dir = dir
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintln(os.Stderr, errors.Wrap(err, "failed fetch"))
+		return 1
+	}
+
 	version := args[0]
-	fmt.Println(version)
-	cmd := exec.Command("git", "archive", "--prefix="+version+"/", version)
+	cmd = exec.Command("git", "archive", "--prefix="+version+"/", version)
 	cmd.Dir = dir
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
