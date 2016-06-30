@@ -47,6 +47,14 @@ func runInstall(args []string) int {
 	}
 
 	version := args[0]
+	if version == "latest" {
+		var err error
+		version, err = latestTag()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, errors.Wrap(err, "failed get the latest version"))
+			return 1
+		}
+	}
 	cmd = exec.Command("git", "archive", "--prefix="+version+"/", version)
 	cmd.Dir = dir
 	var stderr bytes.Buffer
@@ -91,4 +99,23 @@ func runInstall(args []string) int {
 		return 1
 	}
 	return 0
+}
+
+func latestTag() (string, error) {
+	cmd := exec.Command("git", "rev-list", "--tags", "--max-count=1")
+	cmd.Dir = path.Join(VvmnDir, "repo")
+	out, err := cmd.Output()
+	if err != nil {
+		return "", errors.Wrap(err, "failed git rev-list")
+	}
+	sha := string(bytes.TrimSuffix(out, []byte("\n")))
+	cmd = exec.Command("git", "describe", "--tags", sha)
+	cmd.Dir = path.Join(VvmnDir, "repo")
+	var stderr bytes.Buffer
+	cmd.Stderr = &stderr
+	tag, err := cmd.Output()
+	if err != nil {
+		return "", errors.Wrap(err, stderr.String())
+	}
+	return string(bytes.TrimSuffix(tag, []byte("\n"))), nil
 }
