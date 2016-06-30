@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -81,7 +80,7 @@ func main() {
 	}
 
 	home, err := homedir.Dir()
-	VvmnDir = path.Join(home, ".vvmn")
+	VvmnDir = filepath.Join(home, ".vvmn")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

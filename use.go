@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
-	"path"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 )
@@ -28,7 +28,7 @@ func runUse(args []string) int {
 		fmt.Fprintln(os.Stderr, "vvmn use: no vim version specified")
 		return 1
 	}
-	currentDir := path.Join(VvmnDir, "vims", "current")
+	currentDir := filepath.Join(VvmnDir, "vims", "current")
 	version := args[0]
 	if version == "system" {
 		if _, err := os.Stat(currentDir); err != nil {
@@ -40,7 +40,7 @@ func runUse(args []string) int {
 		}
 		return 0
 	}
-	vimsDir := path.Join(VvmnDir, "vims", version)
+	vimsDir := filepath.Join(VvmnDir, "vims", version)
 	if _, err := os.Stat(vimsDir); err != nil {
 		fmt.Fprintln(os.Stderr, errors.Wrap(err, "no installed version of vim specified"))
 		return 1

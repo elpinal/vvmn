@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/pkg/errors"
@@ -26,9 +25,9 @@ func init() {
 
 // runList executes uninstall command and return exit code.
 func runList(args []string) int {
-	current, _ := os.Readlink(path.Join(VvmnDir, "vims", "current"))
+	current, _ := os.Readlink(filepath.Join(VvmnDir, "vims", "current"))
 	currentVersion := filepath.Base(current)
-	vims, err := ioutil.ReadDir(path.Join(VvmnDir, "vims"))
+	vims, err := ioutil.ReadDir(filepath.Join(VvmnDir, "vims"))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, errors.Wrap(err, "failed list versions of vim"))
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 )
@@ -30,7 +30,7 @@ func runInstall(args []string) int {
 		fmt.Fprintln(os.Stderr, "vvmn install: no vim version specified")
 		return 1
 	}
-	dir := path.Join(VvmnDir, "repo")
+	dir := filepath.Join(VvmnDir, "repo")
 	if _, err := os.Stat(dir); err != nil {
 		_, err := exec.Command("git", "clone", "--bare", RepoURL, dir).CombinedOutput()
 		if err != nil {
@@ -66,7 +66,7 @@ func runInstall(args []string) int {
 		return 1
 	}
 
-	srcDir := path.Join(VvmnDir, "src")
+	srcDir := filepath.Join(VvmnDir, "src")
 	if _, err := os.Stat(srcDir); err != nil {
 		if err := os.MkdirAll(srcDir, 0777); err != nil {
 			fmt.Fprintln(os.Stderr, err)
@@ -81,19 +81,19 @@ func runInstall(args []string) int {
 		return 1
 	}
 
-	options := []string{"--prefix="+path.Join(VvmnDir, "vims/"+version)}
+	options := []string{"--prefix=" + filepath.Join(VvmnDir, "vims/"+version)}
 	if len(args) > 1 {
 		options = append(options, args[1:]...)
 	}
 	cmd = exec.Command("./configure", options...)
-	cmd.Dir = path.Join(srcDir, version)
+	cmd.Dir = filepath.Join(srcDir, version)
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, errors.Wrap(err, "failed configure"))
 		return 1
 	}
 
 	cmd = exec.Command("make", "all", "install")
-	cmd.Dir = path.Join(srcDir, version)
+	cmd.Dir = filepath.Join(srcDir, version)
 	if err := cmd.Run(); err != nil {
 		fmt.Fprintln(os.Stderr, errors.Wrap(err, "failed install"))
 		return 1
@@ -103,14 +103,14 @@ func runInstall(args []string) int {
 
 func latestTag() (string, error) {
 	cmd := exec.Command("git", "rev-list", "--tags", "--max-count=1")
-	cmd.Dir = path.Join(VvmnDir, "repo")
+	cmd.Dir = filepath.Join(VvmnDir, "repo")
 	out, err := cmd.Output()
 	if err != nil {
 		return "", errors.Wrap(err, "failed git rev-list")
 	}
 	sha := string(bytes.TrimSuffix(out, []byte("\n")))
 	cmd = exec.Command("git", "describe", "--tags", sha)
-	cmd.Dir = path.Join(VvmnDir, "repo")
+	cmd.Dir = filepath.Join(VvmnDir, "repo")
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	tag, err := cmd.Output()
