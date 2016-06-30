@@ -5,9 +5,11 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 	"text/template"
 
@@ -87,6 +89,36 @@ func main() {
 
 	if _, err := os.Stat(VvmnDir); err != nil {
 		if err := os.MkdirAll(VvmnDir, 0777); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+	etcDir := filepath.Join(VvmnDir, "etc")
+	if _, err := os.Stat(etcDir); err != nil {
+		if err := os.Mkdir(etcDir, 0777); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+	}
+	loginFile := filepath.Join(VvmnDir, "etc", "login")
+	if _, err := os.Stat(loginFile); err != nil {
+		err := ioutil.WriteFile(loginFile, []byte(strings.TrimSpace(`
+#!/bin/bash
+
+__vvmn_configure_path()
+{
+  local vvmn_bin_path="$HOME/.vvmn/vims/current/bin"
+
+  echo "$PATH" | grep -Fqv "$vvmn_bin_path" &&
+    PATH="$vvmn_bin_path:$PATH"
+}
+
+
+__vvmn_configure_path
+
+# __END__
+		`)), 0666)
+		if err != nil {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
