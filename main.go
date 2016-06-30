@@ -53,6 +53,7 @@ func (c *Command) Usage() {
 // Commands lists the available commands and help topics.
 // The order here is the order in which they are printed by 'vvmn help'.
 var commands = []*Command{
+	cmdList,
 	cmdInstall,
 	cmdUse,
 	cmdUninstall,
