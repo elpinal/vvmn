@@ -138,7 +138,7 @@ __vvmn_configure_path
 	os.Exit(2)
 }
 
-var usageTemplate = `vvmn is a tool for managing Vim versions
+var usageTemplate = `vvmn is a tool for managing Vim versions.
 
 Usage:
 
