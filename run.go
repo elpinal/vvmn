@@ -14,6 +14,7 @@ func Run(version string, args ...string) error {
 		return fmt.Errorf("no installed vim version specified")
 	}
 	cmd := exec.Command(vimCmd, args...)
+	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
