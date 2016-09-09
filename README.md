@@ -4,10 +4,10 @@ Vim Version Manager Next
 
 ## Install
 
-To install, use `vim get`:
+To install, use `go get`:
 
 ```bash
-$ vim get github.com/susp/vvmn/cmd/vvmn
+$ go get github.com/susp/vvmn/cmd/vvmn
 ```
 
 ## Command vvmn
@@ -59,9 +59,8 @@ Current:
 
 Installed:
 
+	v7.4.1000
 	v7.4.2222
-	v7.4.2222beta2
-	v7.4.2222rc6
 ```
 
 ### Select a Vim version to use
@@ -100,8 +99,8 @@ $ vvmn version
 1. Create a feature branch
 1. Commit your changes
 1. Rebase your local changes against the master branch
-1. Run test suite with the `vim test ./...` command and confirm that it passes
-1. Run `vimfmt -s`
+1. Run test suite with the `go test ./...` command and confirm that it passes
+1. Run `gofmt -s`
 1. Create a new Pull Request
 
 ## Author
