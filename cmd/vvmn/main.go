@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -13,13 +12,14 @@ import (
 	"text/template"
 
 	"github.com/mitchellh/go-homedir"
+	"github.com/susp/vvmn"
 )
 
 // A Command is an implementation of a vvmn command
 type Command struct {
 	// Run runs the command.
 	// The args are the arguments after the command name.
-	Run func(args []string) int
+	Run func(cmd *Command, args []string) int
 
 	// UsageLine is the one-line usage message.
 	// The first word in the line is taken to be the command name.
@@ -54,17 +54,15 @@ func (c *Command) Usage() {
 // Commands lists the available commands and help topics.
 // The order here is the order in which they are printed by 'vvmn help'.
 var commands = []*Command{
+	cmdGet,
 	cmdList,
-	cmdInstall,
 	cmdUse,
-	cmdUninstall,
+	cmdRemove,
+	cmdRun,
+	cmdVersion,
 }
 
-var RepoURL = "git://github.com/vim/vim.git"
-var VvmnDir string
-
 func main() {
-
 	flag.Usage = usage
 	flag.Parse()
 	log.SetFlags(0)
@@ -79,48 +77,15 @@ func main() {
 		return
 	}
 
-	home, err := homedir.Dir()
-	VvmnDir = filepath.Join(home, ".vvmn")
-	if err != nil {
-		fmt.Fprintln(os.Stderr, err)
-		os.Exit(1)
-	}
-
-	if _, err := os.Stat(VvmnDir); err != nil {
-		if err := os.MkdirAll(VvmnDir, 0777); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-	}
-	etcDir := filepath.Join(VvmnDir, "etc")
-	if _, err := os.Stat(etcDir); err != nil {
-		if err := os.Mkdir(etcDir, 0777); err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-	}
-	loginFile := filepath.Join(VvmnDir, "etc", "login")
-	if _, err := os.Stat(loginFile); err != nil {
-		err := ioutil.WriteFile(loginFile, []byte(strings.TrimSpace(`
-#!/bin/bash
-
-__vvmn_configure_path()
-{
-  local vvmn_bin_path="$HOME/.vvmn/vims/current/bin"
-
-  echo "$PATH" | grep -Fqv "$vvmn_bin_path" &&
-    PATH="$vvmn_bin_path:$PATH"
-}
-
-
-__vvmn_configure_path
-
-# __END__
-		`)), 0666)
+	if root := os.Getenv("VVMNROOT"); root != "" {
+		vvmn.SetRoot(root)
+	} else {
+		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
+			log.Print(err)
+			os.Exit(2)
 		}
+		vvmn.SetRoot(filepath.Join(home, ".vvmn"))
 	}
 
 	for _, cmd := range commands {
@@ -130,11 +95,11 @@ __vvmn_configure_path
 			cmd.Flag.Parse(args[1:])
 			args = cmd.Flag.Args()
 
-			os.Exit(cmd.Run(args))
+			os.Exit(cmd.Run(cmd, args))
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "vvmn: unknown subcommand %q\nRun ' vvmn help' for usage.\n", args[0])
+	fmt.Fprintf(os.Stderr, "vvmn: unknown subcommand %q\nRun 'vvmn help' for usage.\n", args[0])
 	os.Exit(2)
 }
 

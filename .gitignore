@@ -1,2 +1,3 @@
 *.test
 /vvmn
+/testdata/vim

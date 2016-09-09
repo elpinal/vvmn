@@ -1,48 +1,40 @@
-package main
+package vvmn
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-
-	"github.com/pkg/errors"
 )
 
-var cmdList = &Command{
-	Run:       runList,
-	UsageLine: "list ",
-	Short:     "List Vim",
-	Long: `
-
-	`,
+// A Info represents Vim name and states.
+type Info struct {
+	Name      string
+	Current   bool
+	Installed bool
 }
 
-func init() {
-	// Set your flag here like below.
-	// cmdList.Flag.BoolVar(&flagA, "a", false, "")
-}
-
-// runList executes uninstall command and return exit code.
-func runList(args []string) int {
-	current, _ := os.Readlink(filepath.Join(VvmnDir, "vims", "current"))
-	currentVersion := filepath.Base(current)
-	vims, err := ioutil.ReadDir(filepath.Join(VvmnDir, "vims"))
-	if err != nil {
-		fmt.Fprintln(os.Stderr, errors.Wrap(err, "failed list versions of vim"))
+// List returns information of installed Vim versions.
+func List() []Info {
+	if !exist(vvmnrootVim) {
+		return nil
 	}
-	for _, vim := range vims {
-		version := vim.Name()
-		if version == "current" {
+	current, _ := os.Readlink(filepath.Join(vvmnrootVim, "current"))
+	currentVersion := filepath.Base(current)
+	versions, err := ioutil.ReadDir(vvmnrootVim)
+	if err != nil {
+		return nil
+	}
+	var info []Info
+	for _, version := range versions {
+		ver := version.Name()
+		if ver == "current" {
 			continue
 		}
-		var mark string
-		if version == currentVersion {
-			mark = "*"
-		} else {
-			mark = " "
+		var installed bool
+		if exist(filepath.Join(vvmnrootVim, version.Name(), "bin", "vim")) {
+			installed = true
 		}
-		fmt.Println(mark, version)
+		info = append(info, Info{Name: ver, Current: ver == currentVersion, Installed: installed})
 	}
-	return 0
+	return info
 }
