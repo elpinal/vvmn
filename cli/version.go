@@ -2,8 +2,6 @@ package cli
 
 import (
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/susp/vvmn"
 )
@@ -17,11 +15,10 @@ var cmdVersion = &Command{
 
 func runVersion(cmd *Command, args []string) int {
 	if len(args) != 0 {
-		fmt.Fprintf(os.Stderr, "usage: %s\n\n", cmd.UsageLine)
-		fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(cmd.Long))
+		cmd.Usage()
 		return 2
 	}
 
-	fmt.Printf("vvmn version %s\n", vvmn.Version)
+	fmt.Fprintf(cmd.OutStream, "vvmn version %s\n", vvmn.Version)
 	return 0
 }

@@ -23,6 +23,7 @@ type CLI struct {
 func (c CLI) Run(args []string) int {
 	flags := flag.NewFlagSet("vvmn", flag.ContinueOnError)
 	flags.Usage = c.usage
+	flags.SetOutput(c.ErrStream)
 	if err := flags.Parse(args); err != nil {
 		return 2
 	}
@@ -52,13 +53,18 @@ func (c CLI) Run(args []string) int {
 
 	for _, cmd := range commands {
 		if cmd.Name() == args[0] {
-			cmd.Flag.Usage = func() { cmd.Usage() }
-
-			cmd.Flag.Parse(args[1:])
-			args = cmd.Flag.Args()
-
 			cmd.OutStream = c.OutStream
 			cmd.ErrStream = c.ErrStream
+
+			cmd.Flag = *flag.NewFlagSet(args[0], flag.ContinueOnError)
+			cmd.Flag.SetOutput(c.ErrStream)
+
+			cmd.Flag.Usage = func() { cmd.Usage() }
+
+			if err := cmd.Flag.Parse(args[1:]); err != nil {
+				return 2
+			}
+			args = cmd.Flag.Args()
 
 			return cmd.Run(cmd, args)
 		}
