@@ -79,9 +79,7 @@ func TestListAndRun(t *testing.T) {
 	if err := Get("v7.4.2222"); err != nil {
 		t.Fatalf("GetBinary: %v", err)
 	}
-	if list := List(); len(list) == 0 {
-		t.Error("could not list Vim versions")
-	} else if list[0].Name != "v7.4.2222" {
+	if list := List(); list.Installed[0] != "v7.4.2222" {
 		t.Error("could not find v7.4.2222")
 	}
 	if err := Run("v7.4.2222", "--version"); err != nil {
