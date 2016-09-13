@@ -20,6 +20,9 @@ func List() Info {
 	}
 	current, _ := os.Readlink(filepath.Join(vvmnrootVim, "current"))
 	currentVersion := filepath.Base(current)
+	if !exist(current) {
+		currentVersion = ""
+	}
 	versions, err := ioutil.ReadDir(vvmnrootVim)
 	if err != nil {
 		return Info{}
