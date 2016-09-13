@@ -6,35 +6,35 @@ import (
 	"path/filepath"
 )
 
-// A Info represents Vim name and states.
+// A Info represents various Vim versions.
 type Info struct {
-	Name      string
-	Current   bool
-	Installed bool
+	Current    string
+	Installed  []string
+	Downloaded []string
 }
 
-// List returns information of installed Vim versions.
-func List() []Info {
+// List returns information of Vim versions.
+func List() Info {
 	if !exist(vvmnrootVim) {
-		return nil
+		return Info{}
 	}
 	current, _ := os.Readlink(filepath.Join(vvmnrootVim, "current"))
 	currentVersion := filepath.Base(current)
 	versions, err := ioutil.ReadDir(vvmnrootVim)
 	if err != nil {
-		return nil
+		return Info{}
 	}
-	var info []Info
+	var installed, downloaded []string
 	for _, version := range versions {
 		ver := version.Name()
-		if ver == "current" {
+		if ver == "current" || ver == currentVersion {
 			continue
 		}
-		var installed bool
 		if exist(filepath.Join(vvmnrootVim, version.Name(), "bin", "vim")) {
-			installed = true
+			installed = append(installed, ver)
+		} else {
+			downloaded = append(downloaded, ver)
 		}
-		info = append(info, Info{Name: ver, Current: ver == currentVersion, Installed: installed})
 	}
-	return info
+	return Info{Current: currentVersion, Installed: installed, Downloaded: downloaded}
 }

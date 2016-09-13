@@ -21,25 +21,6 @@ func init() {
 	// cmdList.Flag.BoolVar(&flagA, "a", false, "")
 }
 
-func doOnce(f func()) func() {
-	var done bool
-	return func() {
-		if done {
-			return
-		}
-		f()
-		done = true
-	}
-}
-
-func genHeader(header string) func() {
-	return func() {
-		log.Print()
-		log.Print(header)
-		log.Print()
-	}
-}
-
 // runList executes list command and return exit code.
 func runList(cmd *Command, args []string) int {
 	if len(args) != 0 {
@@ -47,37 +28,35 @@ func runList(cmd *Command, args []string) int {
 		return 2
 	}
 
+	logger := log.New(cmd.OutStream, "", 0)
+
 	list := vvmn.List()
-	if list == nil {
-		return 0
+
+	if list.Current != "" {
+		logger.Print("Current:")
+		logger.Print()
+		logger.Print("\t", list.Current)
 	}
 
-	for _, info := range list {
-		if info.Current {
-			log.Print("Current:")
-			log.Print()
-			log.Print("\t", info.Name)
-			break
-		}
+	if len(list.Installed) > 0 {
+		logger.Print()
+		logger.Print("Installed:")
+		logger.Print()
+	}
+	for _, installed := range list.Installed {
+		logger.Print("\t", installed)
 	}
 
-	ih := doOnce(genHeader("Installed:"))
-	for _, info := range list {
-		if !info.Current && info.Installed {
-			ih()
-			log.Print("\t", info.Name)
-		}
+	if len(list.Downloaded) > 0 {
+		logger.Print()
+		logger.Print("Just downloaded; not installed:")
+		logger.Print()
+	}
+	for _, downloaded := range list.Downloaded {
+		logger.Print("\t", downloaded)
 	}
 
-	dh := doOnce(genHeader("Just downloaded; not installed:"))
-	for _, info := range list {
-		if !info.Current && !info.Installed {
-			dh()
-			log.Print("\t", info.Name)
-		}
-	}
-
-	log.Print()
+	logger.Print()
 
 	return 0
 }
