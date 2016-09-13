@@ -1,10 +1,7 @@
 package cli
 
 import (
-	"fmt"
 	"log"
-	"os"
-	"strings"
 
 	"github.com/susp/vvmn"
 )
@@ -18,8 +15,7 @@ var cmdRun = &Command{
 
 func runRun(cmd *Command, args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintf(os.Stderr, "usage: %s\n\n", cmd.UsageLine)
-		fmt.Fprintf(os.Stderr, "%s\n", strings.TrimSpace(cmd.Long))
+		cmd.Usage()
 		return 2
 	}
 
