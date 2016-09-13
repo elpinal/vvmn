@@ -2,6 +2,7 @@ package cli
 
 import (
 	"log"
+	"strings"
 
 	"github.com/susp/vvmn"
 )
@@ -28,22 +29,27 @@ func init() {
 
 // runGet executes get command and return exit code.
 func runGet(cmd *Command, args []string) int {
-	if len(args) == 0 {
+	i := 0
+	for i < len(args) && !strings.HasPrefix(args[i], "-") {
+		i++
+	}
+	versions, cmdArgs := args[:i], args[i:]
+	if len(versions) == 0 {
 		log.Print("vvmn get: no vim versions specified")
 		return 1
 	}
-
-	for i, version := range args {
+	for n, version := range versions {
 		if version == "latest" {
 			latest, err := vvmn.LatestTag()
 			if err != nil {
 				log.Print(err)
 				return 1
 			}
-			version = latest
-			args[i] = latest
+			versions[n] = latest
 		}
+	}
 
+	for _, version := range versions {
 		if err := vvmn.Download(version); err != nil {
 			log.Print(err)
 			return 1
@@ -54,14 +60,14 @@ func runGet(cmd *Command, args []string) int {
 		return 0
 	}
 
-	for _, version := range args {
-		if err := vvmn.Install(version); err != nil {
+	for _, version := range versions {
+		if err := vvmn.Install(version, cmdArgs...); err != nil {
 			log.Print(err)
 			return 1
 		}
 	}
 
-	if err := vvmn.Use(args[len(args)-1:][0]); err != nil {
+	if err := vvmn.Use(versions[len(versions)-1:][0]); err != nil {
 		log.Print(err)
 		return 1
 	}
