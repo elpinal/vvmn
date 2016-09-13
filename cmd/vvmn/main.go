@@ -9,7 +9,7 @@ import (
 
 func main() {
 	yw := color.New(os.Stdout, color.Yellow)
-	rw := color.New(os.Stdout, color.Red)
+	rw := color.New(os.Stderr, color.Red)
 	c := cli.CLI{OutStream: yw, ErrStream: rw}
 	r := c.Run(os.Args[1:])
 	os.Exit(r)
