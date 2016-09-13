@@ -36,27 +36,26 @@ func runList(cmd *Command, args []string) int {
 		logger.Print("Current:")
 		logger.Print()
 		logger.Print("\t", list.Current)
+		logger.Print()
 	}
 
 	if len(list.Installed) > 0 {
-		logger.Print()
 		logger.Print("Installed:")
 		logger.Print()
-	}
-	for _, installed := range list.Installed {
-		logger.Print("\t", installed)
+		for _, installed := range list.Installed {
+			logger.Print("\t", installed)
+		}
+		logger.Print()
 	}
 
 	if len(list.Downloaded) > 0 {
-		logger.Print()
 		logger.Print("Just downloaded; not installed:")
 		logger.Print()
+		for _, downloaded := range list.Downloaded {
+			logger.Print("\t", downloaded)
+		}
+		logger.Print()
 	}
-	for _, downloaded := range list.Downloaded {
-		logger.Print("\t", downloaded)
-	}
-
-	logger.Print()
 
 	return 0
 }
