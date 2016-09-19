@@ -56,7 +56,7 @@ func (c CLI) Run(args []string) int {
 			cmd.OutStream = c.OutStream
 			cmd.ErrStream = c.ErrStream
 
-			cmd.Flag = *flag.NewFlagSet(args[0], flag.ContinueOnError)
+			cmd.Flag.Init(args[0], flag.ContinueOnError)
 			cmd.Flag.SetOutput(c.ErrStream)
 
 			cmd.Flag.Usage = func() { cmd.Usage() }
