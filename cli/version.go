@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	"github.com/susp/vvmn"
+	"github.com/elpinal/vvmn"
 )
 
 var cmdVersion = &Command{

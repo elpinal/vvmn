@@ -12,7 +12,7 @@ import (
 	"text/template"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/susp/vvmn"
+	"github.com/elpinal/vvmn"
 )
 
 type CLI struct {

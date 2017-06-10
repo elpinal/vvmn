@@ -7,7 +7,7 @@ Vim Version Manager Next
 To install, use `go get`:
 
 ```bash
-$ go get github.com/susp/vvmn/cmd/vvmn
+$ go get github.com/elpinal/vvmn/cmd/vvmn
 ```
 
 ## Command vvmn
@@ -95,7 +95,7 @@ $ vvmn version
 
 ## Contribution
 
-1. Fork ([https://github.com/susp/vvmn/fork](https://github.com/susp/vvmn/fork))
+1. Fork ([https://github.com/elpinal/vvmn/fork](https://github.com/elpinal/vvmn/fork))
 1. Create a feature branch
 1. Commit your changes
 1. Rebase your local changes against the master branch
@@ -105,4 +105,4 @@ $ vvmn version
 
 ## Author
 
-[susp](https://github.com/susp)
+[elpinal](https://github.com/elpinal)

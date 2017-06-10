@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/susp/vvmn"
+	"github.com/elpinal/vvmn"
 )
 
 var cmdGet = &Command{

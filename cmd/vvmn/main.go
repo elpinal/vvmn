@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/susp/vvmn/cli"
+	"github.com/elpinal/vvmn/cli"
 )
 
 func main() {
