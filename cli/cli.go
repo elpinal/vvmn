@@ -40,15 +40,17 @@ func (c CLI) Run(args []string) int {
 		return c.help(args[1:])
 	}
 
-	if root := os.Getenv("VVMNROOT"); root != "" {
-		vvmn.SetRoot(root)
-	} else {
-		home, err := homedir.Dir()
-		if err != nil {
-			log.Print(err)
-			return 2
+	if vvmn.GetRoot() == "" {
+		if root := os.Getenv("VVMNROOT"); root != "" {
+			vvmn.SetRoot(root)
+		} else {
+			home, err := homedir.Dir()
+			if err != nil {
+				log.Print(err)
+				return 2
+			}
+			vvmn.SetRoot(filepath.Join(home, ".vvmn"))
 		}
-		vvmn.SetRoot(filepath.Join(home, ".vvmn"))
 	}
 
 	for _, cmd := range commands {

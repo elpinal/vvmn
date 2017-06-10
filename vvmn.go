@@ -37,6 +37,11 @@ func SetRoot(root string) {
 	vvmnrootRepo = filepath.Join(root, "repo")
 }
 
+// GetRoot gets vvmn's root directory.
+func GetRoot() string {
+	return vvmnroot
+}
+
 func exist(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
